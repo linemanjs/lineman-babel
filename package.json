@@ -34,6 +34,7 @@
     }
   ],
   "dependencies": {
+    "grunt-babel": "^5.0.0",
     "underscore": "^1.8.3"
   }
 }
