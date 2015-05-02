@@ -8,9 +8,8 @@ module.exports = (lineman) ->
       app: "<%= files.js.app %>"
       spec: "<%= files.js.spec %>"
       specHelpers: "<%= files.js.specHelpers %>"
-      generated: "generated/js/app.babel.js"
-      generatedSpec: "generated/js/spec.babel.js"
-      generatedSpecHelpers: "generated/js/spec-helpers.babel.js"
+      generated: "generated/js/babel/"
+
 
   config:
     loadNpmTasks: app.loadNpmTasks.concat('grunt-babel')
@@ -23,26 +22,50 @@ module.exports = (lineman) ->
         sourceMap: true
         sourceRoot: '../..'
 
-      compile:
-        files:
-          "<%= files.babel.generated %>": "<%= files.babel.app %>"
-          "<%= files.babel.generatedSpec %>": "<%= files.babel.spec %>"
-          "<%= files.babel.generatedSpecHelpers %>": "<%= files.babel.specHelpers %>"
+      src:
+        files: [
+          expand: true
+          src: "<%= files.babel.app %>"
+          dest: "<%= files.babel.generated %>"
+        ]
+      spec:
+        options:
+          sourceRoot: '..'
+        files: [
+            expand: true
+            src: "<%= files.babel.spec %>"
+            dest: "<%= files.babel.generated %>"
+        ]
+      specHelpers:
+        files: [
+            expand: true
+            src: "<%= files.babel.specHelpers %>"
+            dest: "<%= files.babel.generated %>"
+        ]
+
 
     jshint:
       options:
         esnext: true
 
+    _babel_util:
+      prepend: (prepend, pattern) ->
+        if _(pattern).isArray()
+          "{#{_(pattern).map((p) -> "#{prepend}#{p}")}}"
+        else
+          "#{prepend}#{pattern}"
+
+
     concat_sourcemap:
       js:
         src: _(app.concat_sourcemap.js.src).map (path) ->
-          return "<%= files.babel.generated %>" if path == "<%= files.js.app %>"
+          return "<%= _babel_util.prepend(files.babel.generated, files.babel.app) %>" if path == "<%= files.js.app %>"
           path
 
       spec:
         src: _(app.concat_sourcemap.spec.src).map (path) ->
-          return "<%= files.babel.generatedSpecHelpers %>" if path == "<%= files.js.specHelpers %>"
-          return "<%= files.babel.generatedSpec %>" if path == "<%= files.js.spec %>"
+          return "<%= _babel_util.prepend(files.babel.generated, files.babel.specHelpers) %>" if path == "<%= files.js.specHelpers %>"
+          return "<%= _babel_util.prepend(files.babel.generated, files.babel.spec) %>" if path == "<%= files.js.spec %>"
           path
 
     watch:
