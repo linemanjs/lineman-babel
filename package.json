@@ -9,7 +9,7 @@
     "es2015",
     "babel"
   ],
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "http://www.linemanjs.com",
   "author": {
     "name": "Justin Searls",
